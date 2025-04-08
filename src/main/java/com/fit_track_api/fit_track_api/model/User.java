@@ -1,13 +1,15 @@
 package com.fit_track_api.fit_track_api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User {
@@ -22,7 +24,8 @@ public class User {
     private String email;
     private String password;
 
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
-    private BigDecimal walletBalance = BigDecimal.ZERO;
-    private Integer loyaltyPoints = 0;
+
 }
