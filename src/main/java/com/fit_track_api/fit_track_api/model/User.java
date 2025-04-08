@@ -21,7 +21,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    private String profilePic;
+    private String profilePicture;
 
     @Column(nullable = false, unique = true)
     private String email;
