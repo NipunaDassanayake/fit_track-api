@@ -63,6 +63,11 @@ public class UserController {
         return userService.getFollowing(userId);
     }
 
+    @GetMapping("/{userId}/followers")
+    public List<GetAllUsersResponseDTO> getFollowers(@PathVariable Long userId){
+        return userService.getFollowers(userId);
+    }
+
 
     @GetMapping
     public ResponseEntity<List<GetAllUsersResponseDTO>> getAllUsers() {

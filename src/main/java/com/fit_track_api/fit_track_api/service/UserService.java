@@ -17,5 +17,5 @@ public interface UserService {
     void followUser(Long followerId, Long followedId);
     void unfollowUser(Long followerId, Long followedId);
     public List<GetAllUsersResponseDTO> getFollowing(Long userId) ;
-    List<User> getFollowers(Long userId);
+    public List<GetAllUsersResponseDTO> getFollowers(Long userId);
 }

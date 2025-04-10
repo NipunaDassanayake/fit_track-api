@@ -161,8 +161,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getFollowers(Long userId) {
+    public List<GetAllUsersResponseDTO> getFollowers(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
-        return user.getFollowers();
+        return user.getFollowers().stream().map(followers->{
+            GetAllUsersResponseDTO dto = new GetAllUsersResponseDTO();
+            dto.setId(followers.getId());
+            dto.setUsername(followers.getUsername());
+            dto.setEmail(followers.getEmail());
+            return dto;
+        }).toList();
     }
 }
