@@ -1,5 +1,7 @@
 package com.fit_track_api.fit_track_api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +36,15 @@ public class User {
 
     @ManyToMany
     @JoinTable(
+            name = "user_saved_plans",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "plan_id")
+    )
+    private List<WorkoutPlan> savedPlans = new ArrayList<>();
+
+    @ManyToMany
+    @JsonManagedReference
+    @JoinTable(
             name = "user_followers",
             joinColumns = @JoinColumn(name = "follower_id"),
             inverseJoinColumns = @JoinColumn(name = "followed_id")
@@ -41,6 +52,7 @@ public class User {
     private List<User> following = new ArrayList<>();
 
     @ManyToMany(mappedBy = "following")
+    @JsonBackReference
     private List<User> followers = new ArrayList<>();
 
 }

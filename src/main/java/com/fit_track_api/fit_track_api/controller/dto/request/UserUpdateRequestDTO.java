@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class UserUpdateRequestDTO {
 
-
+    private String username;
+    private String email;
     private MultipartFile profilePicture;
 }
