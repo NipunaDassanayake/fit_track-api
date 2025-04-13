@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +31,8 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user")
-    private List<Post> posts;
+    @JsonBackReference
+    private List<WorkoutPost> workoutPosts;
 
     @ManyToMany
     @JoinTable(
