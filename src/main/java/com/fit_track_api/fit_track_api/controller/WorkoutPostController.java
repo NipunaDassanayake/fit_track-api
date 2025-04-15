@@ -50,4 +50,25 @@ public class WorkoutPostController {
         List<GetPostByUserResponseDTO> posts = workoutPostService.getPostsByUser(userId);
         return ResponseEntity.ok(posts);
     }
+
+    @GetMapping
+    public List<WorkoutPost> getAllPosts(){
+        return workoutPostService.getAllPosts();
+    }
+
+    @PostMapping("/{postId}/like/{userId}")
+    public ResponseEntity<String> likePost(
+            @PathVariable Long postId,
+            @PathVariable Long userId) {
+        workoutPostService.likePost(postId, userId);
+        return ResponseEntity.ok("Post liked successfully");
+    }
+
+    @PostMapping("/{postId}/unlike/{userId}")
+    public ResponseEntity<String> unlikePost(
+            @PathVariable Long postId,
+            @PathVariable Long userId) {
+        workoutPostService.unlikePost(postId, userId);
+        return ResponseEntity.ok("Post unliked successfully");
+    }
 }

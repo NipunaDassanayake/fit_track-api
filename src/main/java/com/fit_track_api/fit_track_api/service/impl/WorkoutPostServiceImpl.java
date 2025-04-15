@@ -5,12 +5,14 @@ import com.fit_track_api.fit_track_api.controller.dto.request.CreatePostRequestD
 import com.fit_track_api.fit_track_api.controller.dto.request.UpdatePostRequestDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.GetPostByIdResponseDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.GetPostByUserResponseDTO;
+import com.fit_track_api.fit_track_api.controller.dto.response.GetUserByIdResponseDTO;
 import com.fit_track_api.fit_track_api.exceptions.ResourceNotFoundException;
 import com.fit_track_api.fit_track_api.model.User;
 import com.fit_track_api.fit_track_api.model.WorkoutPost;
 import com.fit_track_api.fit_track_api.repository.UserRepository;
 import com.fit_track_api.fit_track_api.repository.WorkoutPostRepository;
 import com.fit_track_api.fit_track_api.service.WorkoutPostService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -116,8 +119,20 @@ public class WorkoutPostServiceImpl implements WorkoutPostService {
         responseDTO.setDescription(post.getDescription());
         responseDTO.setImageUrls(post.getImageUrl());
 
+        // Convert likedBy (List<User>) to List<GetUserByIdResponseDTO>
+        List<GetUserByIdResponseDTO> likedByDTOs = post.getLikedBy().stream().map(user -> {
+            GetUserByIdResponseDTO dto = new GetUserByIdResponseDTO();
+            dto.setId(user.getId());
+            dto.setUsername(user.getUsername());
+            dto.setEmail(user.getEmail());
+            return dto;
+        }).collect(Collectors.toList());
+
+        responseDTO.setLikedBy(likedByDTOs);
+
         return responseDTO;
     }
+
 
     @Override
     public List<GetPostByUserResponseDTO> getPostsByUser(Long userId) {
@@ -134,6 +149,17 @@ public class WorkoutPostServiceImpl implements WorkoutPostService {
             dto.setTitle(post.getTitle());
             dto.setDescription(post.getDescription());
             dto.setImageUrls(post.getImageUrl());
+
+            // Convert likedBy (List<User>) to List<GetUserByIdResponseDTO>
+            List<GetUserByIdResponseDTO> likedByDTOs = post.getLikedBy().stream().map(user -> {
+                GetUserByIdResponseDTO likedUserDTO = new GetUserByIdResponseDTO();
+                likedUserDTO.setId(user.getId());
+                likedUserDTO.setUsername(user.getUsername());
+                likedUserDTO.setEmail(user.getEmail());
+                return likedUserDTO;
+            }).collect(Collectors.toList());
+
+            dto.setLikedBy(likedByDTOs);
             responseList.add(dto);
         }
 
@@ -143,23 +169,50 @@ public class WorkoutPostServiceImpl implements WorkoutPostService {
 
     @Override
     public List<WorkoutPost> getFeedPosts(User user) {
-        return List.of();
+        return user.getFollowing().stream()
+                .flatMap(followedUser -> followedUser.getWorkoutPosts().stream())
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<WorkoutPost> getAllPosts() {
-        return List.of();
+        return workoutPostRepository.findAllByOrderByCreatedAtDesc();
     }
 
     @Override
+    @Transactional
     public void likePost(Long postId, Long userId) {
+        WorkoutPost post = workoutPostRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!post.getLikedBy().contains(user)) {
+            post.getLikedBy().add(user);
+            post.setLikedCount(post.getLikedBy().size());
+            workoutPostRepository.save(post);
+        }
     }
+
 
     @Override
+    @Transactional
     public void unlikePost(Long postId, Long userId) {
+        WorkoutPost post = workoutPostRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (post.getLikedBy().contains(user)) {
+            post.getLikedBy().remove(user);
+            post.setLikedCount(post.getLikedBy().size());
+            workoutPostRepository.save(post);
+        }
     }
+
 
     @Override
     public boolean isPostLikedByUser(Long postId, Long userId) {
