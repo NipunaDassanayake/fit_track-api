@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,29 +29,46 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    // User's workout posts
     @OneToMany(mappedBy = "user")
     @JsonBackReference
-    private List<WorkoutPost> workoutPosts;
+    private List<WorkoutPost> workoutPosts = new ArrayList<>();
 
+    // User's saved workout plans
     @ManyToMany
     @JoinTable(
             name = "user_saved_plans",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "plan_id")
     )
+    @JsonManagedReference
     private List<WorkoutPlan> savedPlans = new ArrayList<>();
 
+    // Users that the current user follows
     @ManyToMany
-    @JsonManagedReference
     @JoinTable(
             name = "user_followers",
             joinColumns = @JoinColumn(name = "follower_id"),
             inverseJoinColumns = @JoinColumn(name = "followed_id")
     )
+    @JsonManagedReference
     private List<User> following = new ArrayList<>();
 
+    // Users following the current user
     @ManyToMany(mappedBy = "following")
     @JsonBackReference
     private List<User> followers = new ArrayList<>();
 
+    // Optional: Uncomment if you want to manage the saved plans explicitly
+    /*
+    public void addSavedPlan(WorkoutPlan plan) {
+        this.savedPlans.add(plan);
+        plan.getSavedBy().add(this);
+    }
+
+    public void removeSavedPlan(WorkoutPlan plan) {
+        this.savedPlans.remove(plan);
+        plan.getSavedBy().remove(this);
+    }
+    */
 }

@@ -7,7 +7,9 @@ import java.util.List;
 
 @Repository
 public interface WorkoutPlanRepository extends JpaRepository<WorkoutPlan, Long> {
-    List<WorkoutPlan> findByUser(User user);
-    List<WorkoutPlan> findByIsPublicTrueOrderByIdDesc();
-    List<WorkoutPlan> findByUserInAndIsPublicTrueOrderByIdDesc(List<User> users);
+//    List<WorkoutPlan> findByUser(User user);
+//    List<WorkoutPlan> findByIsPublicTrueOrderByIdDesc();
+//    List<WorkoutPlan> findByCreatorInAndIsPublicTrueOrderByIdDesc(List<User> users);
+//    List<WorkoutPlan> findByCreator(User user);
+//    List<WorkoutPlan> findByCreatorAndIsCompleted(User user, boolean isCompleted);
 }

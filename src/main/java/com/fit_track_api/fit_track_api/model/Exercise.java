@@ -2,10 +2,14 @@ package com.fit_track_api.fit_track_api.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
-@Data
-public class PlanSection {
+
+public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,10 +17,11 @@ public class PlanSection {
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 1000)
     private String description;
 
-    private boolean isCompleted = false;
+    @Column(name = "exercise_order", nullable = false)
+    private Integer order;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", nullable = false)

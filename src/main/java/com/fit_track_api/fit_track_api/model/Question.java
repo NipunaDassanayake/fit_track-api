@@ -4,9 +4,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
-@Data
+
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
