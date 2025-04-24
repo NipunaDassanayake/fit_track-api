@@ -1,8 +1,16 @@
 package com.fit_track_api.fit_track_api.service;
 
-import com.fit_track_api.fit_track_api.controller.dto.request.AchievementDTO;
+import com.fit_track_api.fit_track_api.controller.dto.request.CreateAchievementDTO;
+import com.fit_track_api.fit_track_api.controller.dto.request.UpdateAchievementDTO;
+import com.fit_track_api.fit_track_api.controller.dto.response.AchievementResponseDTO;
 import com.fit_track_api.fit_track_api.model.Achievement;
 
+import java.util.List;
+
 public interface AchievementService {
-    public AchievementDTO shareWorkoutPlanAsAchievement(Long userId, Long workoutPlanId);
+    public Achievement shareAchievement(Long userId, Long workoutPlanId, CreateAchievementDTO createAchievementDTO);
+    public Achievement updateAchievement(Long achievementId, UpdateAchievementDTO updateAchievementDTO);
+    public void deleteAchievement(Long userId, Long achievementId);
+    public AchievementResponseDTO getAchievementById(Long achievementId);
 }
+
