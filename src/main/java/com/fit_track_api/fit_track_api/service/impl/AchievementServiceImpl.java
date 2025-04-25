@@ -1,6 +1,4 @@
-// AchievementServiceImpl.java
 package com.fit_track_api.fit_track_api.service.impl;
-
 import com.fit_track_api.fit_track_api.controller.dto.request.CreateAchievementDTO;
 import com.fit_track_api.fit_track_api.controller.dto.request.UpdateAchievementDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.AchievementResponseDTO;
@@ -17,9 +15,6 @@ import com.fit_track_api.fit_track_api.repository.WorkoutPlanRepository;
 import com.fit_track_api.fit_track_api.service.AchievementService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @AllArgsConstructor

@@ -40,4 +40,9 @@ public class WorkoutPlan {
     @OneToMany(mappedBy = "workoutPlan", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private List<Achievement> achievements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "workoutPlan")
+    private List<Questionnaire> questionnaires;
+
+
 }
