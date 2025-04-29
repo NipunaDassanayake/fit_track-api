@@ -12,6 +12,7 @@ public interface WorkoutPlanService {
     List<WorkoutPlanResponseDTO> getAllPlans();
     public ResponseEntity<WorkoutPlanResponseDTO> completeExercise(Long userId, Long workoutPlanId, Long exerciseId);
     public WorkoutPlan participateInWorkoutPlan(Long userId, Long workoutPlanId);
+    void deleteWorkoutPlan(Long planId);
 
 
 

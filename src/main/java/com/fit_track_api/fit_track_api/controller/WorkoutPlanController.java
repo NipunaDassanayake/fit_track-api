@@ -49,4 +49,11 @@ public class WorkoutPlanController {
         return ResponseEntity.ok(workoutPlan);
     }
 
+
+    @DeleteMapping("/{planId}")
+    public ResponseEntity<String> deleteWorkoutPlan(@PathVariable Long planId) {
+        workoutPlanService.deleteWorkoutPlan(planId);
+        return ResponseEntity.ok("Workout plan deleted successfully");
+    }
+
 }

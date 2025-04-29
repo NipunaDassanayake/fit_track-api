@@ -7,6 +7,5 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByPost(WorkoutPost post);
-    List<Comment> findByPostOrderByCreatedAtAsc(WorkoutPost post);
+    List<Comment> findByAchievementId(Long achievementId);
 }

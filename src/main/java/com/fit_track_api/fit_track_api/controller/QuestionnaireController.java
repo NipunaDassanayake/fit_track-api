@@ -1,9 +1,6 @@
 package com.fit_track_api.fit_track_api.controller;
 
-import com.fit_track_api.fit_track_api.controller.dto.request.CreateQuestionsDTO;
-import com.fit_track_api.fit_track_api.controller.dto.request.QuestionDTO;
-import com.fit_track_api.fit_track_api.controller.dto.request.SubmitAnswerDTO;
-import com.fit_track_api.fit_track_api.controller.dto.request.SubmitBulkAnswersDTO;
+import com.fit_track_api.fit_track_api.controller.dto.request.*;
 import com.fit_track_api.fit_track_api.model.Questionnaire;
 import com.fit_track_api.fit_track_api.model.UserAnswer;
 import com.fit_track_api.fit_track_api.service.QuestionnaireService;
@@ -46,5 +43,20 @@ public class QuestionnaireController {
         List<UserAnswer> savedAnswers = questionnaireService.submitBulkAnswers(submitBulkAnswersDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAnswers);
     }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
+        questionnaireService.deleteQuestionById(id);
+        return ResponseEntity.ok("Question deleted successfully");
+    }
+    @PutMapping
+    public ResponseEntity<QuestionDTO> updateQuestion(@RequestBody UpdateQuestionDTO dto) {
+        System.out.println(dto.getQuestionText());
+        System.out.println(dto.getId());
+        QuestionDTO updated = questionnaireService.updateQuestion(dto);
+        return ResponseEntity.ok(updated);
+    }
+
 
 }

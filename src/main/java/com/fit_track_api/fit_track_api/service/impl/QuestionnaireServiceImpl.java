@@ -1,9 +1,6 @@
 package com.fit_track_api.fit_track_api.service.impl;
 
-import com.fit_track_api.fit_track_api.controller.dto.request.CreateQuestionsDTO;
-import com.fit_track_api.fit_track_api.controller.dto.request.QuestionDTO;
-import com.fit_track_api.fit_track_api.controller.dto.request.SubmitAnswerDTO;
-import com.fit_track_api.fit_track_api.controller.dto.request.SubmitBulkAnswersDTO;
+import com.fit_track_api.fit_track_api.controller.dto.request.*;
 import com.fit_track_api.fit_track_api.exceptions.ResourceNotFoundException;
 import com.fit_track_api.fit_track_api.model.Questionnaire;
 import com.fit_track_api.fit_track_api.model.User;
@@ -111,6 +108,34 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
         return savedAnswers;
     }
+
+    @Override
+    public void deleteQuestionById(Long questionId) {
+        Questionnaire questionnaire = questionnaireRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with ID: " + questionId));
+
+        // Optional: delete associated user answers first (if cascading isn't configured)
+        List<UserAnswer> userAnswers = userAnswerRepository.findByQuestionnaireId(questionId);
+        userAnswerRepository.deleteAll(userAnswers);
+
+        // Now delete the question itself
+        questionnaireRepository.delete(questionnaire);
+    }
+
+    @Override
+    public QuestionDTO updateQuestion(UpdateQuestionDTO updateQuestionDTO) {
+        Questionnaire question = questionnaireRepository.findById(updateQuestionDTO.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+
+        question.setQuestionText(updateQuestionDTO.getQuestionText());
+        Questionnaire updated = questionnaireRepository.save(question);
+
+        QuestionDTO dto = new QuestionDTO();
+        dto.setId(updated.getId());
+        dto.setQuestionText(updated.getQuestionText());
+        return dto;
+    }
+
 
 
 }

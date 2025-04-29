@@ -201,4 +201,21 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
 
         return workoutPlan;
     }
+
+    @Override
+    public void deleteWorkoutPlan(Long planId) {
+        WorkoutPlan workoutPlan = workoutPlanRepository.findById(planId)
+                .orElseThrow(() -> new ResourceNotFoundException("Workout plan not found"));
+
+        // Delete related user participations and user exercises
+        List<UserWorkoutPlan> userWorkoutPlans = userWorkoutPlanRepository.findByWorkoutPlanId(planId);
+        for (UserWorkoutPlan userWorkoutPlan : userWorkoutPlans) {
+            userExerciseRepository.deleteAll(userExerciseRepository.findByUserWorkoutPlanId(userWorkoutPlan.getId()));
+        }
+        userWorkoutPlanRepository.deleteAll(userWorkoutPlans);
+
+        // Delete the workout plan (thanks to cascade = ALL, exercises and questionnaires get deleted too)
+        workoutPlanRepository.delete(workoutPlan);
+    }
+
 }

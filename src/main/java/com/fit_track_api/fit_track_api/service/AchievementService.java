@@ -12,5 +12,7 @@ public interface AchievementService {
     public Achievement updateAchievement(Long achievementId, UpdateAchievementDTO updateAchievementDTO);
     public void deleteAchievement(Long userId, Long achievementId);
     public AchievementResponseDTO getAchievementById(Long achievementId);
+    public void likeAchievement(Long achievementId, Long userId);
+    public void unlikeAchievement(Long achievementId, Long userId);
 }
 

@@ -34,7 +34,8 @@ public class WorkoutPostController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(Long id){
+    public ResponseEntity<String> deletePost(@PathVariable Long id){
+        System.out.println(id);
         workoutPostService.deletePost(id);
         return ResponseEntity.ok("Post deleted successfully");
     }
