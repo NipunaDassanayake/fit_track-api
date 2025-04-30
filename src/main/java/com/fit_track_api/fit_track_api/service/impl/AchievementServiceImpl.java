@@ -143,36 +143,7 @@ public class AchievementServiceImpl implements AchievementService {
 
         return responseDTO;
     }
-@Transactional
-    @Override
-    public void likeAchievement(Long achievementId, Long userId) {
-        Achievement achievement = achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new RuntimeException("achievement not found"));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!achievement.getLikedBy().contains(user)) {
-            achievement.getLikedBy().add(user);
-            achievement.setLikedCount(achievement.getLikedBy().size());
-            achievementRepository.save(achievement);
-        }
-    }
-    @Transactional
-    @Override
-    public void unlikeAchievement(Long achievementId, Long userId) {
-        Achievement achievement = achievementRepository.findById(achievementId)
-                .orElseThrow(() -> new RuntimeException("achievement not found"));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!achievement.getLikedBy().contains(user)) {
-            achievement.getLikedBy().remove(user);
-            achievement.setLikedCount(achievement.getLikedBy().size());
-            achievementRepository.save(achievement);
-        }
-    }
+c
 
 
 }

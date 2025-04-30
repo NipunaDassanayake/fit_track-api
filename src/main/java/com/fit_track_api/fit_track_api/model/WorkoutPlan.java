@@ -44,5 +44,20 @@ public class WorkoutPlan {
     @OneToMany(mappedBy = "workoutPlan")
     private List<Questionnaire> questionnaires;
 
+    @Column(nullable = false)
+    private int likedCount = 0;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "workoutPlan_likes",
+            joinColumns = @JoinColumn(name = "workoutPlan_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> likedBy = new ArrayList<>();
 
 }

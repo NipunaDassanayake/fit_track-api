@@ -8,6 +8,7 @@ import com.fit_track_api.fit_track_api.exceptions.ResourceNotFoundException;
 import com.fit_track_api.fit_track_api.model.*;
 import com.fit_track_api.fit_track_api.repository.*;
 import com.fit_track_api.fit_track_api.service.WorkoutPlanService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -233,5 +234,27 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
         // Delete the workout plan (thanks to cascade = ALL, exercises and questionnaires get deleted too)
         workoutPlanRepository.delete(workoutPlan);
     }
+
+    @Transactional
+    @Override
+    public void likeWorkoutPlan(Long workoutPlanId, Long userId){
+        WorkoutPlan workoutPlan = workoutPlanRepository.findById(workoutPlanId)
+                .orElseThrow(() -> new RuntimeException("workoutPlan not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!workoutPlan.getLikedBy().contains(user)) {
+            workoutPlan.getLikedBy().add(user);
+            workoutPlan.setLikedCount(workoutPlan.getLikedBy().size());
+            workoutPlanRepository.save(workoutPlan);
+        }
+    }
+
+    @Override
+    public void unlikeWorkoutPlan(Long workoutPlanId, Long userId) {
+
+    }
+
 
 }

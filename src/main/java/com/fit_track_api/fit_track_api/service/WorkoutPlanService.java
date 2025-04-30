@@ -13,8 +13,8 @@ public interface WorkoutPlanService {
     public ResponseEntity<WorkoutPlanResponseDTO> completeExercise(Long userId, Long workoutPlanId, Long exerciseId);
     public WorkoutPlan participateInWorkoutPlan(Long userId, Long workoutPlanId);
     void deleteWorkoutPlan(Long planId);
-
-
+    public void likeWorkoutPlan(Long workoutPlanId, Long userId);
+    public void unlikeWorkoutPlan(Long workoutPlanId, Long userId);
 
 
     }
