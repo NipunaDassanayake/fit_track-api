@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class CreateAchievementDTO {
-    private String description; // The description provided by the user
+    private String description;
     private List<MultipartFile> imageUrls;
+    private MultipartFile video;
 }

@@ -8,6 +8,7 @@ import com.fit_track_api.fit_track_api.model.Achievement;
 import com.fit_track_api.fit_track_api.service.AchievementService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,15 +21,16 @@ public class AchievementController {
 
     private final AchievementService achievementService;
 
-    @PostMapping("/share-achievement/{workoutPlanId}")
+    @PostMapping(value = "/share-achievement/{workoutPlanId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> shareAsAchievement(
             @RequestParam Long userId,
             @PathVariable Long workoutPlanId,
-            @RequestBody CreateAchievementDTO createAchievementDTO) {
-        Achievement achievement = achievementService.shareAchievement(
-                userId, workoutPlanId, createAchievementDTO);
-        return ResponseEntity.ok("User Share a Achievement");
+            @ModelAttribute CreateAchievementDTO createAchievementDTO) {
+
+        Achievement achievement = achievementService.shareAchievement(userId, workoutPlanId, createAchievementDTO);
+        return ResponseEntity.ok("User shared an achievement");
     }
+
 
     @PutMapping("/{achievementId}")
     public ResponseEntity<String> updateAchievement(

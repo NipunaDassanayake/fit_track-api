@@ -50,6 +50,8 @@ public class Achievement {
     @JsonBackReference
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(name = "video_url")
+    private String videoUrl;
 
     @ManyToMany
     @JoinTable(

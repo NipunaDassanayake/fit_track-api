@@ -34,15 +34,19 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserWorkoutPlanRepository userWorkoutPlanRepository;
     private final Cloudinary cloudinary;
 
+    @Override
     public Achievement shareAchievement(
             Long userId, Long workoutPlanId, CreateAchievementDTO createAchievementDTO) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         WorkoutPlan plan = workoutPlanRepository.findById(workoutPlanId)
                 .orElseThrow(() -> new ResourceNotFoundException("Workout plan not found"));
 
-        UserWorkoutPlan userWorkoutPlan = userWorkoutPlanRepository.findByUserIdAndWorkoutPlanId(userId, workoutPlanId);
+        UserWorkoutPlan userWorkoutPlan = userWorkoutPlanRepository
+                .findByUserIdAndWorkoutPlanId(userId, workoutPlanId);
+
         if (!userWorkoutPlan.isCompleted()) {
             throw new IllegalStateException("Workout plan must be completed to share as an achievement");
         }
@@ -51,17 +55,28 @@ public class AchievementServiceImpl implements AchievementService {
         if (createAchievementDTO.getImageUrls() != null && !createAchievementDTO.getImageUrls().isEmpty()) {
             for (MultipartFile image : createAchievementDTO.getImageUrls()) {
                 try {
-                    String imageUrl = cloudinary.uploader()
-                            .upload(image.getBytes(), Map.of(
-                                    "public_id", UUID.randomUUID().toString(),
-                                    "folder", "achievements"
-                            ))
-                            .get("url")
-                            .toString();
-                    imageUrls.add(imageUrl);
+                    Map uploadResult = cloudinary.uploader().upload(image.getBytes(), Map.of(
+                            "public_id", UUID.randomUUID().toString(),
+                            "folder", "achievements/images"
+                    ));
+                    imageUrls.add((String) uploadResult.get("secure_url"));
                 } catch (Exception e) {
                     throw new RuntimeException("Image upload failed", e);
                 }
+            }
+        }
+
+        String videoUrl = null;
+        if (createAchievementDTO.getVideo() != null && !createAchievementDTO.getVideo().isEmpty()) {
+            try {
+                Map uploadResult = cloudinary.uploader().upload(createAchievementDTO.getVideo().getBytes(), Map.of(
+                        "resource_type", "video",  // This is necessary for Cloudinary to treat it as a video
+                        "public_id", UUID.randomUUID().toString(),
+                        "folder", "achievements/videos"
+                ));
+                videoUrl = (String) uploadResult.get("secure_url");
+            } catch (Exception e) {
+                throw new RuntimeException("Video upload failed", e);
             }
         }
 
@@ -70,10 +85,12 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setDescription(createAchievementDTO.getDescription());
         achievement.setUser(user);
         achievement.setImageUrl(imageUrls);
+        achievement.setVideoUrl(videoUrl);
         achievement.setWorkoutPlan(plan);
 
         return achievementRepository.save(achievement);
     }
+
 
     @Override
     public Achievement updateAchievement(Long achievementId, UpdateAchievementDTO updateAchievementDTO) {
@@ -143,7 +160,36 @@ public class AchievementServiceImpl implements AchievementService {
 
         return responseDTO;
     }
-c
+@Transactional
+    @Override
+    public void likeAchievement(Long achievementId, Long userId) {
+        Achievement achievement = achievementRepository.findById(achievementId)
+                .orElseThrow(() -> new RuntimeException("achievement not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!achievement.getLikedBy().contains(user)) {
+            achievement.getLikedBy().add(user);
+            achievement.setLikedCount(achievement.getLikedBy().size());
+            achievementRepository.save(achievement);
+        }
+    }
+    @Transactional
+    @Override
+    public void unlikeAchievement(Long achievementId, Long userId) {
+        Achievement achievement = achievementRepository.findById(achievementId)
+                .orElseThrow(() -> new RuntimeException("achievement not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!achievement.getLikedBy().contains(user)) {
+            achievement.getLikedBy().remove(user);
+            achievement.setLikedCount(achievement.getLikedBy().size());
+            achievementRepository.save(achievement);
+        }
+    }
 
 
 }
