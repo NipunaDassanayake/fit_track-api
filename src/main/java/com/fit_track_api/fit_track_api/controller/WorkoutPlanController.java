@@ -6,6 +6,7 @@ import com.fit_track_api.fit_track_api.model.WorkoutPlan;
 import com.fit_track_api.fit_track_api.service.WorkoutPlanService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,14 +20,15 @@ public class WorkoutPlanController {
     private final WorkoutPlanService workoutPlanService;
 
 
-    @PostMapping("/{userId}")
+    @PostMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<WorkoutPlanResponseDTO> createWorkoutPlan(
             @PathVariable Long userId,
-            @Valid @RequestBody CreateWorkoutPlanRequestDTO requestDTO) {
+            @Valid @ModelAttribute CreateWorkoutPlanRequestDTO requestDTO) {
 
         WorkoutPlanResponseDTO responseDTO = workoutPlanService.createPlan(requestDTO, userId);
         return ResponseEntity.ok(responseDTO);
     }
+
 
     @GetMapping
     public ResponseEntity<List<WorkoutPlanResponseDTO>> getAllWorkoutPlans() {

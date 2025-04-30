@@ -1,5 +1,6 @@
 package com.fit_track_api.fit_track_api.service.impl;
 
+import com.cloudinary.Cloudinary;
 import com.fit_track_api.fit_track_api.controller.dto.request.CreateWorkoutPlanRequestDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.ExerciseResponseDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.WorkoutPlanResponseDTO;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,21 +26,19 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
     private final UserRepository userRepository;
     private final UserWorkoutPlanRepository userWorkoutPlanRepository;
     private final UserExerciseRepository userExerciseRepository;
+    private final Cloudinary cloudinary;
 
     @Override
     public WorkoutPlanResponseDTO createPlan(CreateWorkoutPlanRequestDTO createWorkoutPlanRequestDTO, Long userId) {
-
         User creator = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Create and save the plan
         WorkoutPlan plan = new WorkoutPlan();
         plan.setName(createWorkoutPlanRequestDTO.getName());
         plan.setDescription(createWorkoutPlanRequestDTO.getDescription());
         plan.setCreator(creator);
         WorkoutPlan savedPlan = workoutPlanRepository.save(plan);
 
-        // Create and save exercises
         List<Exercise> exercises = createWorkoutPlanRequestDTO.getExercises().stream()
                 .map(exDto -> {
                     Exercise exercise = new Exercise();
@@ -45,6 +46,20 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
                     exercise.setDescription(exDto.getDescription());
                     exercise.setOrder(exDto.getOrder());
                     exercise.setPlan(savedPlan);
+
+                    try {
+                        if (exDto.getImage() != null && !exDto.getImage().isEmpty()) {
+                            Map uploadResult = cloudinary.uploader().upload(
+                                    exDto.getImage().getBytes(),
+                                    Map.of("public_id", UUID.randomUUID().toString(), "folder", "ExerciseImages")
+                            );
+                            String imageUrl = (String) uploadResult.get("secure_url");
+                            exercise.setImageUrl(imageUrl);
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to upload exercise image", e);
+                    }
+
                     return exercise;
                 })
                 .collect(Collectors.toList());
@@ -52,13 +67,13 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
         exerciseRepository.saveAll(exercises);
         savedPlan.setExercises(exercises);
 
-        // Map to response DTO
         List<ExerciseResponseDTO> exerciseResponseDTOs = exercises.stream().map(ex -> {
             ExerciseResponseDTO dto = new ExerciseResponseDTO();
             dto.setId(ex.getId());
             dto.setName(ex.getName());
             dto.setDescription(ex.getDescription());
             dto.setOrder(ex.getOrder());
+            dto.setImageUrl(ex.getImageUrl()); // Add this field to response DTO too
             return dto;
         }).collect(Collectors.toList());
 
@@ -72,6 +87,7 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
 
         return responseDTO;
     }
+
 
     @Override
     public List<WorkoutPlanResponseDTO> getAllPlans() {

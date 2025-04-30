@@ -27,6 +27,9 @@ public class Achievement {
     @Column(length = 1000)
     private String description;
 
+    @ElementCollection
+    private List<String> imageUrl;
+
     private LocalDate achievedDate = LocalDate.now();
 
 //    private String templateType;

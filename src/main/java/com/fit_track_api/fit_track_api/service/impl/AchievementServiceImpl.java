@@ -1,4 +1,5 @@
 package com.fit_track_api.fit_track_api.service.impl;
+import com.cloudinary.Cloudinary;
 import com.fit_track_api.fit_track_api.controller.dto.request.CreateAchievementDTO;
 import com.fit_track_api.fit_track_api.controller.dto.request.UpdateAchievementDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.AchievementResponseDTO;
@@ -16,6 +17,12 @@ import com.fit_track_api.fit_track_api.service.AchievementService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -25,6 +32,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserRepository userRepository;
     private final AchievementRepository achievementRepository;
     private final UserWorkoutPlanRepository userWorkoutPlanRepository;
+    private final Cloudinary cloudinary;
 
     public Achievement shareAchievement(
             Long userId, Long workoutPlanId, CreateAchievementDTO createAchievementDTO) {
@@ -39,10 +47,29 @@ public class AchievementServiceImpl implements AchievementService {
             throw new IllegalStateException("Workout plan must be completed to share as an achievement");
         }
 
+        List<String> imageUrls = new ArrayList<>();
+        if (createAchievementDTO.getImageUrls() != null && !createAchievementDTO.getImageUrls().isEmpty()) {
+            for (MultipartFile image : createAchievementDTO.getImageUrls()) {
+                try {
+                    String imageUrl = cloudinary.uploader()
+                            .upload(image.getBytes(), Map.of(
+                                    "public_id", UUID.randomUUID().toString(),
+                                    "folder", "achievements"
+                            ))
+                            .get("url")
+                            .toString();
+                    imageUrls.add(imageUrl);
+                } catch (Exception e) {
+                    throw new RuntimeException("Image upload failed", e);
+                }
+            }
+        }
+
         Achievement achievement = new Achievement();
         achievement.setTitle("Completed Workout Plan: " + plan.getName());
         achievement.setDescription(createAchievementDTO.getDescription());
         achievement.setUser(user);
+        achievement.setImageUrl(imageUrls);
         achievement.setWorkoutPlan(plan);
 
         return achievementRepository.save(achievement);
@@ -50,16 +77,31 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public Achievement updateAchievement(Long achievementId, UpdateAchievementDTO updateAchievementDTO) {
-        // Retrieve the existing achievement
         Achievement existingAchievement = achievementRepository.findById(achievementId)
                 .orElseThrow(() -> new ResourceNotFoundException("Achievement not found"));
 
-        // Update the description
         existingAchievement.setDescription(updateAchievementDTO.getDescription());
 
-        // Save and return the updated achievement
-        return achievementRepository.save(existingAchievement);
+        try {
+            if (updateAchievementDTO.getImageUrls() != null && !updateAchievementDTO.getImageUrls().isEmpty()) {
+                List<String> uploadedImageUrls = new ArrayList<>();
+
+                for (MultipartFile image : updateAchievementDTO.getImageUrls()) {
+                    Map uploadResult = cloudinary.uploader().upload(image.getBytes(), Map.of(
+                            "public_id", UUID.randomUUID().toString(),
+                            "folder", "achievements"));
+                    String imageUrl = (String) uploadResult.get("secure_url");
+                    uploadedImageUrls.add(imageUrl);
+                }
+                existingAchievement.setImageUrl(uploadedImageUrls); // ensure method name matches
+            }
+
+            return achievementRepository.save(existingAchievement);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update post with ID: " + achievementId, e);
+        }
     }
+
 
     @Override
     public void deleteAchievement(Long userId, Long achievementId) {
@@ -134,6 +176,3 @@ public class AchievementServiceImpl implements AchievementService {
 
 
 }
-
-
-

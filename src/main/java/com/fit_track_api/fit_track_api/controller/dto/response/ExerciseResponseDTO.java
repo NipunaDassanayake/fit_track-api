@@ -7,6 +7,6 @@ public class ExerciseResponseDTO {
     private Long id;
     private String name;
     private String description;
-    private boolean isCompleted;
     private Integer order;
+    private String imageUrl;
 }
