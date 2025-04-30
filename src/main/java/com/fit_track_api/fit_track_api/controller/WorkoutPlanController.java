@@ -58,4 +58,16 @@ public class WorkoutPlanController {
         return ResponseEntity.ok("Workout plan deleted successfully");
     }
 
+    @PostMapping("/{workoutPlanId}/like/{userId}")
+    public ResponseEntity<String> likeWorkoutPlan(@PathVariable Long workoutPlanId, @PathVariable Long userId) {
+        workoutPlanService.likeWorkoutPlan(workoutPlanId, userId);
+        return ResponseEntity.ok("Workout plan liked successfully.");
+    }
+
+    @PostMapping("/{workoutPlanId}/unlike/{userId}")
+    public ResponseEntity<String> unlikeWorkoutPlan(@PathVariable Long workoutPlanId, @PathVariable Long userId) {
+        workoutPlanService.unlikeWorkoutPlan(workoutPlanId, userId);
+        return ResponseEntity.ok("Workout plan unliked successfully.");
+    }
+
 }

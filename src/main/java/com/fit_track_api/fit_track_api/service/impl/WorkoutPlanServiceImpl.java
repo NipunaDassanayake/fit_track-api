@@ -250,11 +250,20 @@ public class WorkoutPlanServiceImpl implements WorkoutPlanService {
             workoutPlanRepository.save(workoutPlan);
         }
     }
-
+    @Transactional
     @Override
-    public void unlikeWorkoutPlan(Long workoutPlanId, Long userId) {
+    public void unlikeWorkoutPlan(Long workoutPlanId, Long userId){
+        WorkoutPlan workoutPlan = workoutPlanRepository.findById(workoutPlanId)
+                .orElseThrow(() -> new RuntimeException("workoutPlan not found"));
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!workoutPlan.getLikedBy().contains(user)) {
+            workoutPlan.getLikedBy().remove(user);
+            workoutPlan.setLikedCount(workoutPlan.getLikedBy().size());
+            workoutPlanRepository.save(workoutPlan);
+        }
     }
-
 
 }
