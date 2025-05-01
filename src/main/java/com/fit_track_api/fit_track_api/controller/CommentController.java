@@ -2,6 +2,7 @@ package com.fit_track_api.fit_track_api.controller;
 
 
 import com.fit_track_api.fit_track_api.controller.dto.request.CreateCommentRequestDTO;
+import com.fit_track_api.fit_track_api.controller.dto.response.GetCommentResponseDTO;
 import com.fit_track_api.fit_track_api.model.Comment;
 import com.fit_track_api.fit_track_api.service.CommentService;
 import lombok.AllArgsConstructor;
@@ -37,9 +38,10 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/achievement/{achievementId}")
-    public ResponseEntity<List<Comment>> getCommentsByAchievement(@PathVariable Long achievementId){
-        List<Comment> comments = commentService.getCommentsByAchievement(achievementId);
+    public ResponseEntity<List<GetCommentResponseDTO>> getCommentsByAchievement(@PathVariable Long achievementId){
+        List<GetCommentResponseDTO> comments = commentService.getCommentsByAchievement(achievementId);
         return ResponseEntity.ok(comments);
     }
+
 
 }

@@ -139,28 +139,35 @@ public class AchievementServiceImpl implements AchievementService {
                 .orElseThrow(() -> new ResourceNotFoundException("Achievement not found with id: " + achievementId));
 
         AchievementResponseDTO responseDTO = new AchievementResponseDTO();
-
-        // Set basic achievement fields
         responseDTO.setId(achievement.getId());
         responseDTO.setTitle(achievement.getTitle());
         responseDTO.setDescription(achievement.getDescription());
         responseDTO.setAchievedDate(achievement.getAchievedDate());
 
-        // Set user information
         if (achievement.getUser() != null) {
             responseDTO.setUserId(achievement.getUser().getId());
             responseDTO.setUsername(achievement.getUser().getUsername());
         }
 
-        // Set workout plan information
         if (achievement.getWorkoutPlan() != null) {
             responseDTO.setWorkoutPlanId(achievement.getWorkoutPlan().getId());
             responseDTO.setWorkoutPlanName(achievement.getWorkoutPlan().getName());
         }
 
+        // Fetch image URLs
+        if (achievement.getImageUrl() != null && !achievement.getImageUrl().isEmpty()) {
+            responseDTO.setImageUrls(achievement.getImageUrl());
+        }
+
+        // Fetch video URL
+        if (achievement.getVideoUrl() != null) {
+            responseDTO.setVideoUrl(achievement.getVideoUrl());
+        }
+
         return responseDTO;
     }
-@Transactional
+
+    @Transactional
     @Override
     public void likeAchievement(Long achievementId, Long userId) {
         Achievement achievement = achievementRepository.findById(achievementId)

@@ -1,6 +1,7 @@
 package com.fit_track_api.fit_track_api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class Comment {
     private User user;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "achievement_id")
     private Achievement achievement;
 }
