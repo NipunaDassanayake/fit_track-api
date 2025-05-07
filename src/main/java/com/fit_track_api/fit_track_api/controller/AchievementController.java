@@ -28,7 +28,8 @@ public class AchievementController {
             @ModelAttribute CreateAchievementDTO createAchievementDTO) {
 
         Achievement achievement = achievementService.shareAchievement(userId, workoutPlanId, createAchievementDTO);
-        return ResponseEntity.ok("User shared an achievement");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Achievement shared successfully");
+
     }
 
 

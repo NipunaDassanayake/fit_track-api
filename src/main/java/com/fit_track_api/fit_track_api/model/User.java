@@ -25,13 +25,16 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    private String profilePicture;
+//    private String profilePicture;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvider;
 
     // User's workout posts
     @OneToMany(mappedBy = "user")

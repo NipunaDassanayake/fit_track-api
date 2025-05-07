@@ -1,6 +1,7 @@
 package com.fit_track_api.fit_track_api.controller;
 
 import com.fit_track_api.fit_track_api.controller.dto.request.CreateUserRequestDTO;
+import com.fit_track_api.fit_track_api.controller.dto.request.LoginRequestDTO;
 import com.fit_track_api.fit_track_api.controller.dto.request.UserUpdateRequestDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.GetAllUsersResponseDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.GetUserByIdResponseDTO;
@@ -22,11 +23,15 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<String> registerUser(@RequestBody CreateUserRequestDTO createUserRequestDTO){
-        System.out.println(createUserRequestDTO.getPassword());
         System.out.println(createUserRequestDTO.getUsername());
         System.out.println(createUserRequestDTO.getEmail());
         userService.registerUser(createUserRequestDTO);
        return ResponseEntity.ok("User Created Successfully");
+    }
+    @PostMapping("/login")
+    public ResponseEntity<User> loginUserLocal(@RequestBody LoginRequestDTO loginRequestDTO){
+        System.out.println(loginRequestDTO.getEmail());
+        return ResponseEntity.ok(userService.loginUserLocal(loginRequestDTO));
     }
 
     @PutMapping("/{id}")

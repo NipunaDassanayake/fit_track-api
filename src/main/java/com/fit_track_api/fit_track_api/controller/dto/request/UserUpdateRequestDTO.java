@@ -8,5 +8,5 @@ public class UserUpdateRequestDTO {
 
     private String username;
     private String email;
-    private MultipartFile profilePicture;
+//    private MultipartFile profilePicture;
 }

@@ -2,14 +2,20 @@ package com.fit_track_api.fit_track_api.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.fit_track_api.fit_track_api.controller.dto.request.CreateUserRequestDTO;
+import com.fit_track_api.fit_track_api.controller.dto.request.LoginRequestDTO;
 import com.fit_track_api.fit_track_api.controller.dto.request.UserUpdateRequestDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.GetAllUsersResponseDTO;
 import com.fit_track_api.fit_track_api.controller.dto.response.GetUserByIdResponseDTO;
 import com.fit_track_api.fit_track_api.exceptions.ResourceNotFoundException;
+import com.fit_track_api.fit_track_api.model.AuthProvider;
 import com.fit_track_api.fit_track_api.model.User;
 import com.fit_track_api.fit_track_api.repository.UserRepository;
 import com.fit_track_api.fit_track_api.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,14 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final Cloudinary cloudinary;
-
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -39,7 +45,8 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsername(createUserRequestDTO.getUsername());
         user.setEmail(createUserRequestDTO.getEmail());
-        user.setPassword(createUserRequestDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(createUserRequestDTO.getPassword()));
+        user.setAuthProvider(AuthProvider.LOCAL);
         return userRepository.save(user);
     }
 
@@ -62,25 +69,28 @@ public class UserServiceImpl implements UserService {
             //     user.setPassword(passwordEncoder.encode(userUpdateRequestDTO.getPassword()));
             // }
 
-            if (userUpdateRequestDTO.getProfilePicture() != null && !userUpdateRequestDTO.getProfilePicture().isEmpty()) {
-                try {
-                    String profilePictureUrl = cloudinary.uploader()
-                            .upload(userUpdateRequestDTO.getProfilePicture().getBytes(),
-                                    Map.of("public_id", UUID.randomUUID().toString(),
-                                            "folder", "ProfilePictures"))
-                            .get("url")
-                            .toString();
-                    user.setProfilePicture(profilePictureUrl);
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to upload profile picture", e);
-                }
-            }
-
-            return userRepository.save(user);
-
+//            if (userUpdateRequestDTO.getProfilePicture() != null && !userUpdateRequestDTO.getProfilePicture().isEmpty()) {
+//                try {
+//                    String profilePictureUrl = cloudinary.uploader()
+//                            .upload(userUpdateRequestDTO.getProfilePicture().getBytes(),
+//                                    Map.of("public_id", UUID.randomUUID().toString(),
+//                                            "folder", "ProfilePictures"))
+//                            .get("url")
+//                            .toString();
+//                    user.setProfilePicture(profilePictureUrl);
+//                } catch (IOException e) {
+//                    throw new RuntimeException("Failed to upload profile picture", e);
+//                }
+//            }
+//
+//            return userRepository.save(user);
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Failed to update user with ID: " + id, e);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to update user with ID: " + id, e);
+            throw new RuntimeException(e);
         }
+        return user;
     }
 
 
@@ -91,6 +101,38 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
     }
+
+    @Override
+    public User loginUserLocal(LoginRequestDTO loginRequestDTO) {
+        User existingUser = userRepository.findByEmail(loginRequestDTO.getEmail()).orElseThrow(()->new RuntimeException("User not found with email : "+loginRequestDTO.getEmail()));
+    if(!passwordEncoder.matches(loginRequestDTO.getPassword(), existingUser.getPassword())){
+        throw new RuntimeException("User password does not match");
+    }
+    return existingUser;
+    }
+
+    @Override
+    public User loginRegisterByGoogleOAuth2(OAuth2AuthenticationToken auth2AuthenticationToken) {
+        OAuth2User oAuth2User = auth2AuthenticationToken.getPrincipal();
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+
+        log.info("USER Email FROM GOOGLE IS {}", email);
+        log.info("USER NAME FROM GOOGLE IS {}", name);
+
+        User user = userRepository.findByEmail(email).orElse(null); // First check if the email exists
+        if (user == null) {
+            // If no user exists with this email, create a new one
+            user = new User();
+            user.setEmail(email);
+            user.setUsername(name);
+            user.setAuthProvider(AuthProvider.GOOGLE);
+            userRepository.save(user);
+        }
+
+        return user;
+    }
+
 
     @Override
     public GetUserByIdResponseDTO getUserById(Long id) {
