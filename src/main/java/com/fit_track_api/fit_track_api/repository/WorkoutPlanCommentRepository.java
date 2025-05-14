@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface WorkoutPlanCommentRepository extends JpaRepository<WorkoutPlanComment, Long> {
-    List<Comment> findByWorkoutPlanId(Long workoutPlanId);
+    List<WorkoutPlanComment> findByWorkoutPlanId(Long workoutPlanId);
 }
