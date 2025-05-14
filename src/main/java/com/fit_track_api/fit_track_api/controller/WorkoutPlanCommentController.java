@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/")
 @AllArgsConstructor
 public class WorkoutPlanCommentController {
 
@@ -20,7 +20,7 @@ public class WorkoutPlanCommentController {
     private WorkoutPlanCommentService commentService;
 
 
-    @PostMapping("/workoutPlan/{workoutPlanId}/user/{userId}/comment")
+    @PostMapping("workoutPlan/{workoutPlanId}/user/{userId}/comment")
     public WorkoutPlanComment addComment(@PathVariable Long workoutPlanId , @PathVariable Long userId , @RequestBody CreateCommentRequestDTO createCommentRequestDTO){
         System.out.println(workoutPlanId);
         System.out.println(userId);
@@ -28,15 +28,16 @@ public class WorkoutPlanCommentController {
 
     }
 
-    @PutMapping("/{commentId}")
-    public ResponseEntity<WorkoutPlanComment> updateComment(@PathVariable Long workoutPlanId, @RequestParam String newContent){
+    @PutMapping("/{workoutPlanId}")
+    public ResponseEntity<WorkoutPlanComment> updateComment(@PathVariable Long workoutPlanId, @RequestBody String newContent){
         WorkoutPlanComment updatedComment = commentService.updateComment(workoutPlanId, newContent);
         return ResponseEntity.ok(updatedComment);
 
     }
-    @DeleteMapping("/workoutPlanComment/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId){
-        commentService.deleteComment(commentId);
+    @DeleteMapping("/{workoutPlanCommentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long workoutPlanCommentId){
+        System.out.println(workoutPlanCommentId);
+        commentService.deleteComment(workoutPlanCommentId);
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/workoutPlan/{workoutPlanId}")
