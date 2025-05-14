@@ -22,10 +22,6 @@ public class AuthController {
     private final UserService userService;
 
 
-    @GetMapping
-    public String hello(){
-        return "Welcome to fit track";
-    }
 
     @GetMapping("/login/google")
     public ResponseEntity<String> loginGoogleAuth(HttpServletResponse response) throws IOException {

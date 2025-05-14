@@ -32,8 +32,6 @@ public class Achievement {
 
     private LocalDate achievedDate = LocalDate.now();
 
-//    private String templateType;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

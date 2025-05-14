@@ -47,6 +47,10 @@ public class WorkoutPlan {
     @Column(nullable = false)
     private int likedCount = 0;
 
+    @OneToMany(mappedBy = "workoutPlan")
+    @JsonBackReference
+    private List<WorkoutPlanComment> comments = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
