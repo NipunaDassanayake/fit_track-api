@@ -1,6 +1,7 @@
 package com.fit_track_api.fit_track_api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,7 +23,8 @@ public class WorkoutPlan {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // Creator of the plan
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonManagedReference
     @JoinColumn(name = "user_id", nullable = false)
     private User creator;
 

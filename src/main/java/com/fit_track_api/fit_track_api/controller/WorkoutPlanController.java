@@ -46,9 +46,9 @@ public class WorkoutPlanController {
 
     // API endpoint to participate in a workout plan
     @PostMapping("/participate/{workoutPlanId}")
-    public ResponseEntity<WorkoutPlan> participateInWorkoutPlan(@RequestParam Long userId, @PathVariable Long workoutPlanId) {
+    public ResponseEntity<String> participateInWorkoutPlan(@RequestParam Long userId, @PathVariable Long workoutPlanId) {
         WorkoutPlan workoutPlan = workoutPlanService.participateInWorkoutPlan(userId, workoutPlanId);
-        return ResponseEntity.ok(workoutPlan);
+        return ResponseEntity.ok("User Successfully Participated in Workout Plan");
     }
 
 

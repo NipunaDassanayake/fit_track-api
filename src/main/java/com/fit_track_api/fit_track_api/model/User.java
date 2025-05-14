@@ -25,11 +25,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-//    private String profilePicture;
-
     @Column(nullable = false, unique = true)
     private String email;
-
 
     private String password;
 
@@ -37,11 +34,16 @@ public class User {
     private AuthProvider authProvider;
 
     // User's workout posts
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<WorkoutPost> workoutPosts = new ArrayList<>();
 
-    // User's saved workout plans
+    // Workout plans created by the user
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<WorkoutPlan> workoutPlans = new ArrayList<>();
+
+    // Workout plans saved by the user
     @ManyToMany
     @JoinTable(
             name = "user_saved_plans",
@@ -51,7 +53,7 @@ public class User {
     @JsonManagedReference
     private List<WorkoutPlan> savedPlans = new ArrayList<>();
 
-    // Users that the current user follows
+    // Users followed by this user
     @ManyToMany
     @JoinTable(
             name = "user_followers",
@@ -61,27 +63,8 @@ public class User {
     @JsonManagedReference
     private List<User> following = new ArrayList<>();
 
-    // Users following the current user
+    // Users who follow this user
     @ManyToMany(mappedBy = "following")
     @JsonBackReference
     private List<User> followers = new ArrayList<>();
-
-    // Optional: Uncomment if you want to manage the saved plans explicitly
-    /*
-    public void addSavedPlan(WorkoutPlan plan) {
-        this.savedPlans.add(plan);
-        plan.getSavedBy().add(this);
-    }
-
-    public void removeSavedPlan(WorkoutPlan plan) {
-        this.savedPlans.remove(plan);
-        plan.getSavedBy().remove(this);
-    }
-    */
-
-    @OneToMany(mappedBy = "user")
-    private List<UserAnswer> userAnswers;
-
-
-
 }
