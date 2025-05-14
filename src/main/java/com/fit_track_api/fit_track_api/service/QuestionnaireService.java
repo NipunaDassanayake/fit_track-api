@@ -14,5 +14,7 @@ public interface QuestionnaireService {
     public List<UserAnswer> submitBulkAnswers(SubmitBulkAnswersDTO submitBulkAnswersDTO);
     void deleteQuestionById(Long questionId);
     QuestionDTO updateQuestion(UpdateQuestionDTO updateQuestionDTO);
+    List<QuestionDTO> getAllQuestions();
+
 
 }

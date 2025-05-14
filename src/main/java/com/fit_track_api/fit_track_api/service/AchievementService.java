@@ -14,5 +14,6 @@ public interface AchievementService {
     public AchievementResponseDTO getAchievementById(Long achievementId);
     public void likeAchievement(Long achievementId, Long userId);
     public void unlikeAchievement(Long achievementId, Long userId);
+    public List<AchievementResponseDTO> getAllAchievements();
 }
 

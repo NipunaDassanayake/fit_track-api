@@ -36,7 +36,8 @@ public class SecurityConfig {
                                 "/api/achievements/**",
                                 "/api/comment/**",
                                 "/api/questions/**",
-                                "/api/workoutPlan/**"
+                                "/api/workoutPlan/**",
+                                "/api/workoutPlans/**"
 
                         ).permitAll()  // Public endpoints
                         .anyRequest().authenticated()  // Secure other endpoints

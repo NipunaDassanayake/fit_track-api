@@ -143,6 +143,7 @@ public class AchievementServiceImpl implements AchievementService {
         responseDTO.setTitle(achievement.getTitle());
         responseDTO.setDescription(achievement.getDescription());
         responseDTO.setAchievedDate(achievement.getAchievedDate());
+        responseDTO.setLikedCount(achievement.getLikedCount());
 
         if (achievement.getUser() != null) {
             responseDTO.setUserId(achievement.getUser().getId());
@@ -197,6 +198,38 @@ public class AchievementServiceImpl implements AchievementService {
             achievementRepository.save(achievement);
         }
     }
+
+    @Override
+    public List<AchievementResponseDTO> getAllAchievements() {
+        List<Achievement> achievements = achievementRepository.findAll();
+        List<AchievementResponseDTO> responseList = new ArrayList<>();
+
+        for (Achievement achievement : achievements) {
+            AchievementResponseDTO dto = new AchievementResponseDTO();
+            dto.setId(achievement.getId());
+            dto.setTitle(achievement.getTitle());
+            dto.setDescription(achievement.getDescription());
+            dto.setAchievedDate(achievement.getAchievedDate());
+            dto.setImageUrls(achievement.getImageUrl());
+            dto.setVideoUrl(achievement.getVideoUrl());
+            dto.setLikedCount(achievement.getLikedCount());
+
+            if (achievement.getUser() != null) {
+                dto.setUserId(achievement.getUser().getId());
+                dto.setUsername(achievement.getUser().getUsername());
+            }
+
+            if (achievement.getWorkoutPlan() != null) {
+                dto.setWorkoutPlanId(achievement.getWorkoutPlan().getId());
+                dto.setWorkoutPlanName(achievement.getWorkoutPlan().getName());
+            }
+
+            responseList.add(dto);
+        }
+
+        return responseList;
+    }
+
 
 
 }

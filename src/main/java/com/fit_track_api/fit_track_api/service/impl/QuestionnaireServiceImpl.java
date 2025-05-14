@@ -136,6 +136,17 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         return dto;
     }
 
+    @Override
+    public List<QuestionDTO> getAllQuestions() {
+        List<Questionnaire> questionnaires = questionnaireRepository.findAll();
+
+        List<QuestionDTO> questionDTOs = new ArrayList<>();
+        for (Questionnaire questionnaire : questionnaires) {
+            questionDTOs.add(new QuestionDTO(questionnaire.getId(), questionnaire.getQuestionText()));
+        }
+
+        return questionDTOs;
+    }
 
 
 }

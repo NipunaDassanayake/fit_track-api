@@ -17,4 +17,5 @@ public class AchievementResponseDTO {
     private String workoutPlanName;
     private List<String> imageUrls;
     private String videoUrl;
+    private int likedCount;
 }
