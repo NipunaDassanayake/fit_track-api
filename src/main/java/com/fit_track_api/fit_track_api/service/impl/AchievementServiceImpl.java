@@ -199,6 +199,7 @@ public class AchievementServiceImpl implements AchievementService {
         }
     }
 
+<<<<<<< HEAD
     @Override
     public List<AchievementResponseDTO> getAllAchievements() {
         List<Achievement> achievements = achievementRepository.findAll();
@@ -231,5 +232,7 @@ public class AchievementServiceImpl implements AchievementService {
     }
 
 
+=======
+>>>>>>> origin/master
 
 }

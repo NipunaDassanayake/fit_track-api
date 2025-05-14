@@ -1,7 +1,10 @@
 package com.fit_track_api.fit_track_api.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+=======
+>>>>>>> origin/master
 import jakarta.persistence.*;
 import lombok.Data;
 

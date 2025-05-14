@@ -63,8 +63,27 @@ public class User {
     @JsonManagedReference
     private List<User> following = new ArrayList<>();
 
-    // Users who follow this user
+    // Users following the current user
     @ManyToMany(mappedBy = "following")
     @JsonBackReference
     private List<User> followers = new ArrayList<>();
+
+    // Optional: Uncomment if you want to manage the saved plans explicitly
+    /*
+    public void addSavedPlan(WorkoutPlan plan) {
+        this.savedPlans.add(plan);
+        plan.getSavedBy().add(this);
+    }
+
+    public void removeSavedPlan(WorkoutPlan plan) {
+        this.savedPlans.remove(plan);
+        plan.getSavedBy().remove(this);
+    }
+    */
+
+    @OneToMany(mappedBy = "user")
+    private List<UserAnswer> userAnswers;
+
+
+
 }

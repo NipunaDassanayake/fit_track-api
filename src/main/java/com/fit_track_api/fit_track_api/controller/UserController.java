@@ -23,6 +23,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<String> registerUser(@RequestBody CreateUserRequestDTO createUserRequestDTO){
+        System.out.println(createUserRequestDTO.getPassword());
         System.out.println(createUserRequestDTO.getUsername());
         System.out.println(createUserRequestDTO.getEmail());
         userService.registerUser(createUserRequestDTO);

@@ -30,6 +30,7 @@ public class AchievementController {
         Achievement achievement = achievementService.shareAchievement(userId, workoutPlanId, createAchievementDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("Achievement shared successfully");
 
+        return ResponseEntity.ok("User shared an achievement");
     }
 
 
